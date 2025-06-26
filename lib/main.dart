@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cometchat_chat_uikit/cometchat_chat_uikit.dart';
 import 'package:cometchat_calls_uikit/cometchat_calls_uikit.dart';
-import 'cometchat_config.dart'; // Ensure this file contains appId, region, and authKey
-import 'screens/messages_screen.dart'; // Your custom message screen
+import 'cometchat_config.dart'; 
+import 'screens/messages_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CometChat UI Kit',
-      themeMode: ThemeMode.system, // Adapts to system theme
+      themeMode: ThemeMode.system, 
       theme: ThemeData(
         brightness: Brightness.light,
         useMaterial3: true,
@@ -48,7 +48,7 @@ class Home extends StatelessWidget {
     await CometChatUIKit.init(uiKitSettings: settings.build());
 
     await CometChatUIKit.login(
-      'cometchat-uid-1', // Replace this with dynamic UID if needed
+      'cometchat-uid-1', 
       onSuccess: (_) => debugPrint('✅ Login Successful'),
       onError: (err) => throw Exception('Login Failed: $err'),
     );
@@ -141,6 +141,7 @@ class _TabsScreenState extends State<TabsScreen> {
             ),
           ),
           BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
             backgroundColor: Theme.of(context).colorScheme.surface,
             selectedItemColor: Theme.of(context).colorScheme.primary,
             unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(153),
