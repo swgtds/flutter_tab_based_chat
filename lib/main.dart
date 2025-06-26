@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cometchat_chat_uikit/cometchat_chat_uikit.dart';
-import 'package:cometchat_calls_uikit/cometchat_calls_uikit.dart'; //Optional: Include if you're using Audio/Video Calling
-import 'screens/messages_screen.dart';
-import 'cometchat_config.dart';
+import 'package:cometchat_calls_uikit/cometchat_calls_uikit.dart';
+import 'cometchat_config.dart'; // Ensure this file contains appId, region, and authKey
+import 'screens/messages_screen.dart'; // Your custom message screen
 
 void main() => runApp(const MyApp());
 
@@ -13,9 +13,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CometChat UI Kit',
+      themeMode: ThemeMode.system, // Adapts to system theme
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        brightness: Brightness.light,
         useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
       ),
       home: const Home(),
     );
@@ -32,12 +42,13 @@ class Home extends StatelessWidget {
       ..appId = CometChatConfig.appId
       ..region = CometChatConfig.region
       ..authKey = CometChatConfig.authKey
-      ..extensions = CometChatUIKitChatExtensions.getDefaultExtensions() //Replace this with empty array, if you want to disable all extensions
-      ..callingExtension = CometChatCallingExtension(); //Optional: Include if you're using Audio/Video Calling
+      ..extensions = CometChatUIKitChatExtensions.getDefaultExtensions()
+      ..callingExtension = CometChatCallingExtension();
 
     await CometChatUIKit.init(uiKitSettings: settings.build());
+
     await CometChatUIKit.login(
-      'cometchat-uid-1',
+      'cometchat-uid-1', // Replace this with dynamic UID if needed
       onSuccess: (_) => debugPrint('✅ Login Successful'),
       onError: (err) => throw Exception('Login Failed: $err'),
     );
@@ -94,56 +105,53 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+      body: Column(
         children: [
-          CometChatConversations(
-            showBackButton: false,
-            onItemTap: (conversation) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MessagesScreen(
-                    user: conversation.conversationWith is User
-                        ? conversation.conversationWith as User
-                        : null,
-                    group: conversation.conversationWith is Group
-                        ? conversation.conversationWith as Group
-                        : null,
-                  ),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              children: [
+                CometChatConversations(
+                  showBackButton: false,
+                  onItemTap: (conversation) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MessagesScreen(
+                          user: conversation.conversationWith is User
+                              ? conversation.conversationWith as User
+                              : null,
+                          group: conversation.conversationWith is Group
+                              ? conversation.conversationWith as Group
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+                CometChatCallLogs(),
+                CometChatUsers(),
+                CometChatGroups(),
+              ],
+            ),
           ),
-          CometChatCallLogs(),
-          CometChatUsers(),
-          CometChatGroups(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: "Chat",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.call),
-            label: "Calls",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Users",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: "Groups",
+          BottomNavigationBar(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            selectedItemColor: Theme.of(context).colorScheme.primary,
+            unselectedItemColor: Theme.of(context).colorScheme.onSurface.withAlpha(153),
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"),
+              BottomNavigationBarItem(icon: Icon(Icons.call), label: "Calls"),
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: "Users"),
+              BottomNavigationBarItem(icon: Icon(Icons.group), label: "Groups"),
+            ],
           ),
         ],
       ),
